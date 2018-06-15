@@ -6,17 +6,26 @@ nmpMgr mgr;
 using namespace std;
 
 int main(int argc, char *argv[]){
-
-	if(argc != 3){
+/*
+	if(argc < 2){
 		cerr << "The number of parameters is incorrect." << endl;
 		return 0;
 	}
-
+*/
 	string file = argv[1];
+	string outFile = file + ".out";
 
-	mgr.read(file);
+	if(!mgr.read(file)){
+		cerr << "Cannot open file: " << argv[1] << endl;
+		return 0;
+	}
 
-	mgr.print();
+	mgr.optimize();
+	mgr.printFile(outFile);
+	if(mgr.verify())
+		cout << "Verification passed..." << endl;
+	else
+		cout << "Verification not passed..." << endl;
 
 	return 0;
 }

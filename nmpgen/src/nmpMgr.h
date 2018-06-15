@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <utility>
 
 using namespace std;
@@ -13,11 +14,24 @@ public:
 	nmpMgr() { init(); }
 	~nmpMgr() { reset(); }
 	bool read(string);
-	void print();
+	void optimize();
+	void printFile(string);
+	bool verify();
 
 private:
 	void init();
 	void reset();
 	void lexInfo(string&);
-	vector<pair<string,string> > _name;
+	string int2str(unsigned);
+	unsigned str2int(string&);
+
+	//data member
+	map<string,string> _name;
+	vector<string> _preName;
+	vector<string> _postName;
+	map<string,unsigned> _preMap;
+	map<string,unsigned> _postMap;
+	vector<unsigned> _postInt;
+	vector<string> _postStr;
+	unsigned _base;
 };
