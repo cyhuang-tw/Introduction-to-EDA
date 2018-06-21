@@ -5,7 +5,18 @@
 
 void nmpMgr::init()
 {
-	_base = 93;
+	for(unsigned i = 0; i < 10; ++i){	//0-9
+		_baseTable.push_back(char(48 + i));
+	}
+	for(unsigned i = 0; i < 26; ++i){	//A-Z
+		_baseTable.push_back(char(65 + i));
+	}
+	for(unsigned i = 0; i < 26; ++i){	//a-z
+		_baseTable.push_back(char(97 + i));
+	}
+
+	_base = _baseTable.size();
+	
 	return;
 }
 
@@ -17,8 +28,8 @@ void nmpMgr::reset()
 
 bool nmpMgr::read(string fileName)
 {
-	fstream file;
-	file.open(fileName,ios::in);
+	fstream file(fileName.c_str(),ios::in);
+	//file.open(fileName,ios::in);
 
 	if(!file.is_open()) //in case that file name is not correct, avoiding crash
 		return false;
@@ -85,7 +96,7 @@ void nmpMgr::optimize()
 void nmpMgr::printFile(string str)
 {
 	fstream outFile;
-	outFile.open(str,ios::out);
+	outFile.open(str.c_str(),ios::out);
 
 	for(unsigned i = 0; i < _postInt.size(); ++i){
 		string str = int2str(_postInt[i]);
@@ -102,13 +113,14 @@ void nmpMgr::printFile(string str)
 string nmpMgr::int2str(unsigned num)
 {
 	//A -> 65	B-> 66	...	Z -> 90
-	unsigned radix = ceil(log(_name.size())/log(float(_base)));
+	unsigned digit = ceil(log(_name.size())/log(float(_base)));
 	unsigned mod = 0;
 	string str = "";
-	for(unsigned i = 0; i < radix; ++i){
+	for(unsigned i = 0; i < digit; ++i){
 		mod = num % _base;
 		num = (num-mod)/_base;
-		str += char(33 + mod);
+		//str += char(33 + mod);
+		str += _baseTable[mod];
 	}
 	return str;
 }
@@ -118,7 +130,17 @@ unsigned nmpMgr::str2int(string& str)
 	unsigned radix = ceil(log(_name.size())/log(float(_base)));
 	unsigned num = 0;
 	for(unsigned i = 0; i < str.length(); ++i){
-		num += (int(str[i])-33)*pow(_base,i);
+		int tmp = (int)(str[i]);
+		if(tmp < 58){	//0-9
+			num += (tmp - 48)*pow(_base,i);
+			continue;
+		}
+		if(tmp < 91){	//A-Z
+			num += (10 + (tmp - 65))*pow(_base,i);
+			continue;
+		}
+		num += (36 + (tmp - 97))*pow(_base,i);
+		//num += (int(str[i])-33)*pow(_base,i);
 	}
 	return num;
 }

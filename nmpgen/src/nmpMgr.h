@@ -33,5 +33,6 @@ private:
 	map<string,unsigned> _postMap;
 	vector<unsigned> _postInt;
 	vector<string> _postStr;
+	vector<char> _baseTable;
 	unsigned _base;
 };
