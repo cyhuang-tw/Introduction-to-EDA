@@ -123,14 +123,14 @@ void nmpMgr::printFile(string str)
 	}
 	outFile << "]" << endl;
 	outFile << "_in = json.load(open(sys.argv[1],'r'))" << endl;
-	outFile << "_out = open(sys.argv[2],'w')" << endl;
+	outFile << "_write = open(sys.argv[2],'w')" << endl;
 	outFile << "left = _in[0]" << endl;
 	outFile << "right = _in[1]" << endl;
 	outFile << "left.sort()" << endl;
 	outFile << "right.sort()" << endl;
 	outFile << "out_dict = dict()" << endl;
 	outFile << "for i in range(len(table)):" << endl;
-	outFile << "	" << "if (table[i] == ""):" << endl;
+	outFile << "	" << "if (table[i] == \"\"):" << endl;
 	outFile << "		" << "ans = right[i]" << endl;
 	outFile << "	" << "else:" << endl;
 	outFile << "		" << "index = 0" << endl;
