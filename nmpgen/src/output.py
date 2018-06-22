@@ -30,7 +30,7 @@ for i in range(len(table)):
 		# ===== TODO: handle the 62 based int =======
 		index = 0
 		for j in range(len(table[i])):
-			index += ascii_62(table[i][j]) * 62 * j
+			index += ascii_62(table[i][j]) * (62 ** j)
 		ans = right[index]
 
 	out_dict[left[i]] = ans
