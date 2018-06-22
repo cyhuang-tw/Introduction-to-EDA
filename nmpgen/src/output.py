@@ -28,7 +28,9 @@ for i in range(len(table)):
 		ans = right[i]
 	else:
 		# ===== TODO: handle the 62 based int =======
-		index = ascii_62(table[i][0]) + ascii_62(table[i][1]) * 62 + ascii_62(table[i][2])*62*62
+		index = 0
+		for j in range(len(table[i])):
+			index += ascii_62(table[i][j]) * 62 * j
 		ans = right[index]
 
 	out_dict[left[i]] = ans
