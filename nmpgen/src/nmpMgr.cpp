@@ -95,17 +95,51 @@ void nmpMgr::optimize()
 
 void nmpMgr::printFile(string str)
 {
+	//print a python script
 	fstream outFile;
 	outFile.open(str.c_str(),ios::out);
 
-	for(unsigned i = 0; i < _postInt.size(); ++i){
+	outFile << "import sys" << endl;
+	outFile << "import json" << endl;
+	outFile << "def ascii_62(char):" << endl;
+	outFile << "	" << "asc = ord(62)" << endl;
+	outFile << "	" << "if(asc > 96):" << endl;
+	outFile << "		" << "return (35 + (asc - 96))" << endl;
+	outFile << "	" << "elif (asc > 64):" << endl;
+	outFile << "		" << "return (9 + (asc - 64))" << endl;
+	outFile << "	" << "else:" << endl;
+	outFile << "		" << "return (asc - 48)" << endl;
+
+	outFile << "table = " << "[";
+	for(unsigned i = 0; i < _postInt.size();){
 		string str = int2str(_postInt[i]);
 		if(_postInt[i] == i)
 			str = "";
-		outFile << str << endl;
+		outFile << "\"" << str << "\"";
 
 		_postStr.push_back(str);
+		if(++i != _postInt.size())
+			outFile << ",";
 	}
+	outFile << "]" << endl;
+	outFile << "_in = json.load(open(sys.argv[1],'r'))" << endl;
+	outFile << "_out = open(sys.argv[2],'w')" << endl;
+	outFile << "left = _in[0]" << endl;
+	outFile << "right = _in[1]" << endl;
+	outFile << "left.sort()" << endl;
+	outFile << "right.sort()" << endl;
+	outFile << "out_dict = dict()" << endl;
+	outFile << "for i in range(len(table)):" << endl;
+	outFile << "	" << "if (table[i] == ""):" << endl;
+	outFile << "		" << "ans = right[i]" << endl;
+	outFile << "	" << "else:" << endl;
+	outFile << "		" << "index = 0" << endl;
+	outFile << "		" << "for j in range(len(table[i])):" << endl;
+	outFile << "			" << "index += ascii_62(table[i][j])*(62**j)" << endl;
+	outFile << "		" << "ans = right[index]" << endl;
+	outFile << "	" << "out_dict[left[i]] = ans" << endl;
+	outFile << "write_dict = json.dumps(out_dict)" << endl;
+	outFile << "_write.write(write_dict)" << endl;
 
 	outFile.close();
 }

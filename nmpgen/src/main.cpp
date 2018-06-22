@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 	}
 */
 	string file = argv[1];
-	string outFile = file + ".out";
+	string outFile = file + ".py";
 
 	if(!mgr.read(file)){
 		cerr << "Cannot open file: " << argv[1] << endl;
@@ -22,10 +22,11 @@ int main(int argc, char *argv[]){
 
 	mgr.optimize();
 	mgr.printFile(outFile);
+	//mgr.print();
 	if(mgr.verify())
 		cout << "Verification passed..." << endl;
 	else
-		cout << "Verification not passed..." << endl;
+		cout << "Verification NOT passed..." << endl;
 
 	return 0;
 }

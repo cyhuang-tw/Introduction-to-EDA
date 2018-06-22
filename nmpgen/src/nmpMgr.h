@@ -17,6 +17,7 @@ public:
 	void optimize();
 	void printFile(string);
 	bool verify();
+	//void print();
 
 private:
 	void init();
