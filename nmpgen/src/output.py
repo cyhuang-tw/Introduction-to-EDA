@@ -24,7 +24,7 @@ right.sort()
 out_dict = dict()
 
 for i in range(len(table)):
-	if (table[i] == " "):
+	if (table[i] == ""):
 		ans = right[i]
 	else:
 		# ===== TODO: handle the 62 based int =======
