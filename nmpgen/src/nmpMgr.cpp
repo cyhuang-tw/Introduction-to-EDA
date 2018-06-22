@@ -102,7 +102,7 @@ void nmpMgr::printFile(string str)
 	outFile << "import sys" << endl;
 	outFile << "import json" << endl;
 	outFile << "def ascii_62(char):" << endl;
-	outFile << "	" << "asc = ord(62)" << endl;
+	outFile << "	" << "asc = ord(char)" << endl;
 	outFile << "	" << "if(asc > 96):" << endl;
 	outFile << "		" << "return (35 + (asc - 96))" << endl;
 	outFile << "	" << "elif (asc > 64):" << endl;
