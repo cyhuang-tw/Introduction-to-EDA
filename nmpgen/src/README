@@ -1,0 +1,2 @@
+Main program usage: ./cada065 <map_in.json> <python_script.py>
+Python script usage: python3 <python_script.py> <name_in.json> <map_out.json>
