@@ -29,7 +29,6 @@ void nmpMgr::reset()
 bool nmpMgr::read(string fileName)
 {
 	fstream file(fileName.c_str(),ios::in);
-	//file.open(fileName,ios::in);
 
 	if(!file.is_open()) //in case that file name is not correct, avoiding crash
 		return false;
@@ -61,14 +60,7 @@ void nmpMgr::lexInfo(string& str)
 
 	_name.insert(std::make_pair(preName,postName));
 }
-/*
-void nmpMgr::print()
-{
-	for(unsigned i = 0; i < _name.size(); ++i){
-		cout << _name[i].first << " " << _name[i].second << endl;
-	}
-}
-*/
+
 void nmpMgr::optimize()
 {
 	for(map<string,string>::iterator iter = _name.begin(); iter != _name.end(); ++iter){
@@ -146,14 +138,12 @@ void nmpMgr::printFile(string str)
 
 string nmpMgr::int2str(unsigned num)
 {
-	//A -> 65	B-> 66	...	Z -> 90
 	unsigned digit = ceil(log(_name.size())/log(float(_base)));
 	unsigned mod = 0;
 	string str = "";
 	for(unsigned i = 0; i < digit; ++i){
 		mod = num % _base;
 		num = (num-mod)/_base;
-		//str += char(33 + mod);
 		str += _baseTable[mod];
 	}
 	return str;
@@ -174,7 +164,6 @@ unsigned nmpMgr::str2int(string& str)
 			continue;
 		}
 		num += (36 + (tmp - 97))*pow(_base,i);
-		//num += (int(str[i])-33)*pow(_base,i);
 	}
 	return num;
 }
