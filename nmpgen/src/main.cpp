@@ -11,12 +11,12 @@ int main(int argc, char *argv[]){
 	if(argc != 3)
 		return 0;
 
-	clock_t start, end;
+	//clock_t start, end;
 
 	string file = argv[1];
 	string outFile = argv[2];
 
-	start = clock();
+	//start = clock();
 
 	if(!mgr.read(file))
 		return 0;
@@ -24,9 +24,9 @@ int main(int argc, char *argv[]){
 	mgr.optimize();
 	mgr.printFile(outFile);
 
-	end = clock();
+	//end = clock();
 
-	cout << "Elapsed time: " << ((double)(end - start))/CLOCKS_PER_SEC << endl;
+	//cout << "Elapsed time: " << ((double)(end - start))/CLOCKS_PER_SEC << endl;
 
 	return 0;
 }

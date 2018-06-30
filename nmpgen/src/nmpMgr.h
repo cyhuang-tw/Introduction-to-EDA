@@ -16,12 +16,13 @@ public:
 	bool read(string);
 	void optimize();
 	void printFile(string);
-	bool verify();
+	bool verify(vector<string>&);
 
 private:
 	void init();
 	void reset();
 	void lexInfo(string&);
+	void strOpt(vector<string>&);
 	string int2str(unsigned);
 	unsigned str2int(string&);
 

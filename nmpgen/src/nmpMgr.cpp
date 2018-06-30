@@ -85,6 +85,54 @@ void nmpMgr::optimize()
 	}	
 }
 
+void nmpMgr::strOpt(vector<string>& list)
+{
+	unsigned count = 0;
+	for(unsigned i = 0; i < _postInt.size(); ++i){
+		string str = int2str(_postInt[i]);
+		if(_postInt[i] == i){
+			++count;
+			if(i == _postInt.size() - 1){
+				if(count == 1)
+					list.push_back("");
+				else
+					list.push_back("*" + int2str(count));
+			}
+			continue;
+		}
+		if(count != 0 && count != 1)
+			list.push_back("*" + int2str(count));
+		if(count == 1)
+			list.push_back("");
+		count = 0;
+		list.push_back(str);
+	}
+
+	string hold = "";
+	size_t ptr = 0;
+
+	for(unsigned i = 0; i < list.size(); ++i){
+		if(list[i].find("*") != string::npos || list[i].empty()){
+			hold = "";
+			continue;
+		}
+		if(hold.empty()){
+			hold = list[i];
+			continue;
+		}
+		string str = "";
+		for(unsigned j = list[i].size() - 1; j >= 0; --j){
+			if(list[i][j] != hold[j]){
+				str = list[i].substr(0,j+1);
+				if(str == list[i])
+					hold = list[i];
+				list[i] = str;
+				break;
+			}
+		}
+	}	
+}
+
 void nmpMgr::printFile(string str)
 {
 	//print a python script
@@ -93,6 +141,31 @@ void nmpMgr::printFile(string str)
 
 	outFile << "import sys" << endl;
 	outFile << "import json" << endl;
+
+	bool same = true;
+	for(unsigned i = 0; i < _postInt.size(); ++i){
+		if(_postInt[i] != i){
+			same = false;
+			break;
+		}
+	}
+
+	if(same){
+		outFile << "_in = json.load(open(sys.argv[1],'r'))" << endl;
+		outFile << "_write = open(sys.argv[2],'w')" << endl;
+		outFile << "left = _in[0]" << endl;
+		outFile << "right = _in[1]" << endl;
+		outFile << "left.sort()" << endl;
+		outFile << "right.sort()" << endl;
+		outFile << "out_dict = dict()" << endl;
+		outFile << "for i in range(len(left)):" << endl;
+		outFile << "	" << "ans = right[i]" << endl;
+		outFile << "	" << "out_dict[left[i]] = ans" << endl;
+		outFile << "write_dict = json.dumps(out_dict)" << endl;
+		outFile << "_write.write(write_dict)" << endl;
+		return;
+	}
+
 	outFile << "def ascii_62(char):" << endl;
 	outFile << "	" << "asc = ord(char)" << endl;
 	outFile << "	" << "if(asc > 96):" << endl;
@@ -102,18 +175,44 @@ void nmpMgr::printFile(string str)
 	outFile << "	" << "else:" << endl;
 	outFile << "		" << "return (asc - 48)" << endl;
 
-	outFile << "table = " << "[";
-	for(unsigned i = 0; i < _postInt.size();){
-		string str = int2str(_postInt[i]);
-		if(_postInt[i] == i)
-			str = "";
-		outFile << "\"" << str << "\"";
+	outFile << "def str2int(s):" << endl;
+	outFile << "	" << "index = 0" << endl;
+	outFile << "	" << "for i in range(len(s)):" << endl;
+	outFile << "		" << "index += ascii_62(s[i]) * (62 ** i)" << endl;
+	outFile << "	" << "return index" << endl;
 
-		_postStr.push_back(str);
-		if(++i != _postInt.size())
+	vector<string> list;
+	strOpt(list);
+
+	outFile << "digit" << " = " << ceil(log(_name.size())/log(float(_base))) << endl;
+
+	outFile << "r = " << "[";
+	for(unsigned i = 0; i < list.size();){
+		outFile << "\"" << list[i] << "\"";
+		if(++i != list.size())
 			outFile << ",";
 	}
 	outFile << "]" << endl;
+
+	outFile << "table = []" << endl;
+	outFile << "hold = \"\"" << endl;
+	outFile << "for x in range(len(r)):" << endl;
+	outFile << "	" << "rpt = r[x].find(\"*\")" << endl;
+	outFile << "	" << "if (rpt != -1):" << endl;
+	outFile << "		" << "for y in range(str2int(r[x][rpt+1:])):" << endl;
+	outFile << "			" << "table.append(\"\")" << endl;
+	outFile << "		" << "hold = \"\"" << endl;
+	outFile << "		" << "continue" << endl;
+	outFile << "	" << "if (r[x] == \"\"):" << endl;
+	outFile << "		" << "table.append(\"\")" << endl;
+	outFile << "		" << "hold = \"\"" << endl;
+	outFile << "		" << "continue" << endl;
+	outFile << "	" << "if (hold == \"\" or len(r[x]) == digit):" << endl;
+	outFile << "		" << "hold = s = r[x]" << endl;
+	outFile << "	" << "if(len(r[x]) != digit):" << endl;
+	outFile << "		" << "s = r[x] + hold[len(r[x]):]" << endl;
+	outFile << "	" << "table.append(s)" << endl;
+
 	outFile << "_in = json.load(open(sys.argv[1],'r'))" << endl;
 	outFile << "_write = open(sys.argv[2],'w')" << endl;
 	outFile << "left = _in[0]" << endl;
@@ -125,9 +224,7 @@ void nmpMgr::printFile(string str)
 	outFile << "	" << "if (table[i] == \"\"):" << endl;
 	outFile << "		" << "ans = right[i]" << endl;
 	outFile << "	" << "else:" << endl;
-	outFile << "		" << "index = 0" << endl;
-	outFile << "		" << "for j in range(len(table[i])):" << endl;
-	outFile << "			" << "index += ascii_62(table[i][j])*(62**j)" << endl;
+	outFile << "		" << "index = str2int(table[i])" << endl;
 	outFile << "		" << "ans = right[index]" << endl;
 	outFile << "	" << "out_dict[left[i]] = ans" << endl;
 	outFile << "write_dict = json.dumps(out_dict)" << endl;
@@ -168,18 +265,57 @@ unsigned nmpMgr::str2int(string& str)
 	return num;
 }
 
-bool nmpMgr::verify()
+bool nmpMgr::verify(vector<string>& list)
 {
-	map<string,string>::iterator iter;
+	if(list.empty())
+		return true;
+	unsigned digit = ceil(log(_name.size())/log(float(_base)));
+	unsigned code = 0;
+	string hold = list[0];
+	string str = "";
+	vector<string> rList;
+	for(unsigned i = 0; i < list.size(); ++i){
+		str = list[i];
+		if(list[i].find("*") != string::npos){
+			str = list[i].substr(1);
+			code = str2int(str);
+			for(unsigned j = 0; j < code; ++j)
+				rList.push_back("");
+			hold = "";
+			continue;
+		}
+		if(list[i] == ""){
+			rList.push_back("");
+			hold = "";
+			continue;
+		}
 
-	for(iter = _name.begin(); iter != _name.end(); ++iter){
-		unsigned idx = (_preMap.find(iter -> first)) -> second; 
-		string code = _postStr[idx];
-		unsigned pos = str2int(code);
-		if(code == "")
-			pos = idx;
-		if(_postName[pos] != iter -> second)
-			return false;
+		if(hold.empty())
+			hold = list[i];
+		if(list[i].size() == digit)
+			hold = list[i];
+		if(list[i].size() != digit){
+			str = list[i] + hold.substr(list[i].size());
+		}
+		rList.push_back(str);
 	}
+	if(rList.size() != _name.size()){
+		cout << rList.size() << " " << _name.size() << endl;
+		cout << "incorrect size" << endl;
+		return false;
+	}
+
+	for(unsigned i = 0; i < rList.size(); ++i){
+		unsigned idx = str2int(rList[i]);
+		if(rList[i] == "")
+			idx = i;
+		string ans = (_name.find(_preName[i])) -> second;
+		if(_postName[idx] != ans){
+			cout << "Error: " << _postName[idx] << " != " << ans << endl;
+			return false;
+		}
+
+	}
+	cout << "Verification passed!" << endl;
 	return true;
 }
